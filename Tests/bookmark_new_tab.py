@@ -18,6 +18,12 @@ def tabs():
     return [dict(x, pin=x["id"] in pins) for x in st["tabs"] if not x.get("blank")]
 
 
+def open_bookmark(name):
+    sv.cmd({"do": "openmark", "url": f"{sv.BASE}/{name}"})
+    time.sleep(1.2)
+    return tabs()
+
+
 def main():
     t = sv.T()
     try:
@@ -25,19 +31,25 @@ def main():
         sv.launch()
         a = sv.page("a")
         sv.cmd({"do": "pin", "id": a})
-        sv.cmd({"do": "select", "id": a}); time.sleep(0.5)
+        sv.cmd({"do": "select", "id": a})
+        time.sleep(0.5)
         before = len(tabs())
-        sv.cmd({"do": "openmark", "url": f"{sv.BASE}/b"}); time.sleep(1.2)
-        now = tabs()
+        now = open_bookmark("b")
         pin = [x for x in now if x.get("pin")]
         t.ok("the pin still holds its page", len(pin) == 1 and pin[0]["url"].endswith("/a"), pin)
-        t.ok("the bookmark came in a tab of its own", len(now) == before + 1 and any(x["url"].endswith("/b") and not x.get("pin") for x in now), [x["url"] for x in now])
+        t.ok("the bookmark came in a tab of its own",
+             len(now) == before + 1 and any(x["url"].endswith("/b") and not x["pin"] for x in now),
+             now)
         c = sv.page("c")
-        sv.cmd({"do": "select", "id": c}); time.sleep(0.4)
+        sv.cmd({"do": "select", "id": c})
+        time.sleep(0.4)
         before = len(tabs())
-        sv.cmd({"do": "openmark", "url": f"{sv.BASE}/d"}); time.sleep(1.2)
-        now = tabs()
-        t.ok("an ordinary tab keeps its page too", any(x["url"].endswith("/c") for x in now) and len(now) == before + 1, [x["url"] for x in now])
+        now = open_bookmark("d")
+        t.ok("an ordinary tab keeps its page too",
+             any(x["id"] == c and x["url"].endswith("/c") for x in now), now)
+        t.ok("the second bookmark also gets a new tab",
+             len(now) == before + 1 and any(x["url"].endswith("/d") and not x["pin"] for x in now),
+             now)
     finally:
         t.done()
         sv.finish()

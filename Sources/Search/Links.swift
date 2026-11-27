@@ -10,7 +10,7 @@ import AppKit
 final class Links: NSObject, NSApplicationDelegate {
     /// Where an address goes once there is somewhere for it to go.
     private static var deliver: ((URL) -> Void)?
-    /// Addresses that arrived first.
+    /// Addresses received before the browser is ready.
     private static var waiting: [URL] = []
     /// The window in front's, or the first one's, once there is one.
     @MainActor static var window: NSWindow? { Browsers.front?.window ?? Browsers.primary?.window }

@@ -26,10 +26,12 @@ enum KeptScroll {
           ? [window.scrollX, window.scrollY] : null;
       });
       addEventListener('pageshow', function (e) {
-        var was = kept;
+        var previousPosition = kept;
         kept = null;
-        if (!e.persisted || !was || !(was[0] || was[1])) return;
-        if (window.scrollX === 0 && window.scrollY === 0) window.scrollTo(was[0], was[1]);
+        if (!e.persisted || !previousPosition || !(previousPosition[0] || previousPosition[1])) return;
+        if (window.scrollX === 0 && window.scrollY === 0) {
+          window.scrollTo(previousPosition[0], previousPosition[1]);
+        }
       });
     })();
     """

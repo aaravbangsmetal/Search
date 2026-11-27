@@ -55,9 +55,12 @@ final class MediaKeys: NSObject, WKScriptMessageHandler {
         // Only the element's own play counts: a page's synthetic 'play'
         // event neither marks it as played nor unmutes what Search holds.
         if (!e.isTrusted) return;
-        var el = e.target;
-        played.add(el);
-        if (held.has(el)) { held.delete(el); el.muted = false; }
+        var media = e.target;
+        played.add(media);
+        if (held.has(media)) {
+          held.delete(media);
+          media.muted = false;
+        }
       }
       function changed(e) {
         // Unmuted by the page, or its controls, while held: theirs wins.

@@ -28,9 +28,11 @@ enum LiveRate {
       var proto = HTMLMediaElement.prototype;
       var plain = Object.getOwnPropertyDescriptor(proto, 'playbackRate');
       if (!plain || !plain.get || !plain.set) return;
-      // Off 1 by this much at most: a player catching up, not a choice.
-      var nudge = 0.1, beside = 1.0001;
-      var nudged = new WeakSet(), asked = new WeakMap();
+      // The largest rate adjustment treated as a live stream correction.
+      var nudge = 0.1;
+      var beside = 1.0001;
+      var nudged = new WeakSet();
+      var asked = new WeakMap();
       var smooth = {
         get playbackRate() {
           var now = plain.get.call(this), was = asked.get(this);

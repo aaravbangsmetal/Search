@@ -30,9 +30,16 @@ COUNT = 10
 def world(n):
     os.makedirs(sv.SUPPORT, exist_ok=True)
     tabs = [{"url": f"{sv.BASE}/tab-{i}", "title": f"Tab {i}"} for i in range(n)]
-    json.dump({"tabs": tabs, "active": 0}, open(f"{sv.SUPPORT}/session.json", "w"))
-    resident = [{"id": str(uuid.uuid4()).upper(), "title": "Resident", "url": "https://resident.test/"}]
-    json.dump(resident, open(f"{sv.SUPPORT}/bookmarks.json", "w"))
+    resident = [{
+        "id": str(uuid.uuid4()).upper(),
+        "title": "Resident",
+        "url": "https://resident.test/",
+    }]
+    support = Path(sv.SUPPORT)
+    with (support / "session.json").open("w", encoding="utf-8") as session_file:
+        json.dump({"tabs": tabs, "active": 0}, session_file)
+    with (support / "bookmarks.json").open("w", encoding="utf-8") as bookmarks_file:
+        json.dump(resident, bookmarks_file)
 
 
 def measure(n):

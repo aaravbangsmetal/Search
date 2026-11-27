@@ -41,9 +41,12 @@ def only(*keep):
 def main():
     t = sv.T()
     try:
-        sv.setup(**{"tabs.newAfterLast": True}); sv.launch()
-        a = sv.page("a"); p = sv.page("p")
-        sv.cmd({"do": "pin", "id": a}); sv.cmd({"do": "pin", "id": p})
+        sv.setup(**{"tabs.newAfterLast": True})
+        sv.launch()
+        a = sv.page("a")
+        p = sv.page("p")
+        sv.cmd({"do": "pin", "id": a})
+        sv.cmd({"do": "pin", "id": p})
         b = sv.page("b")
         only(b)
         st = sv.sp("state")
@@ -56,7 +59,7 @@ def main():
         t.ok("a new tab is on screen, not a pin",
              now is not None and st["activeID"] not in st["pins"] and now["blank"], st)
         t.ok("the pins are still there", sorted(st["pins"]) == sorted([a, p]), st["pins"])
-        t.ok("b is gone", b not in [x["id"] for x in st["tabs"]], st["tabs"])
+        t.ok("b is gone", all(tab["id"] != b for tab in st["tabs"]), st["tabs"])
 
         st = sv.sp("reopen")
         t.ok("⇧⌘T brings b back, on screen", name(st, st["activeID"]) == "b", st)
@@ -77,14 +80,18 @@ def main():
         t.ok("and no new tab is made for it", loose(st) == [e], st["tabs"])
 
         # The switch off, as it comes: a pin is picked, as before.
-        sv.quit(); sv.setup(); sv.launch()
-        a = sv.page("a"); sv.cmd({"do": "pin", "id": a})
+        sv.quit()
+        sv.setup()
+        sv.launch()
+        a = sv.page("a")
+        sv.cmd({"do": "pin", "id": a})
         b = sv.page("b")
         only(b)
         st = sv.sp("close", id=b)
         t.ok("switch off: the pin is picked, as before", st["activeID"] == a, st)
     finally:
-        t.done(); sv.finish()
+        t.done()
+        sv.finish()
     sys.exit(1 if t.failed else 0)
 
 

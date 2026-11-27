@@ -33,9 +33,19 @@ sv.use("bm-names")
 def png(rgb, size=32):
     """A square of one colour, as a site's icon."""
     row = b"\x00" + bytes(rgb) * size
-    chunk = lambda kind, data: struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0))
-            + chunk(b"IDAT", zlib.compress(row * size)) + chunk(b"IEND", b""))
+
+    def chunk(kind, data):
+        payload = kind + data
+        checksum = struct.pack(">I", zlib.crc32(payload) & 0xFFFFFFFF)
+        return struct.pack(">I", len(data)) + payload + checksum
+
+    header = struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", header)
+        + chunk(b"IDAT", zlib.compress(row * size))
+        + chunk(b"IEND", b"")
+    )
 
 
 node = lambda **f: {"id": str(uuid.uuid4()).upper(), **f}

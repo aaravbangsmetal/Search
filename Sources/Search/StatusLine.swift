@@ -65,7 +65,8 @@ final class HoveredLink: NSObject, WKScriptMessageHandler {
         guard let address = message.body as? String else { return }
         MainActor.assumeIsolated {
             guard let tab, message.webView === tab.built else { return }
-            tab.onLink?(tab, address.isEmpty ? nil : address)
+            let destination = address.isEmpty ? nil : address
+            tab.onLink?(tab, destination)
         }
     }
 }

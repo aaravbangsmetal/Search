@@ -23,9 +23,9 @@ enum TabOffersPanel {
     /// than once as the edit begins, so the list follows the latest one.
     static func follow(_ browser: Browser, anchor field: NSView) {
         anchor = field
-        let key = ObjectIdentifier(browser)
-        guard watching[key] == nil else { return }
-        watching[key] = browser.$tabOffers
+        let browserID = ObjectIdentifier(browser)
+        guard watching[browserID] == nil else { return }
+        watching[browserID] = browser.$tabOffers
             .map(\.isEmpty)
             .removeDuplicates()
             .receive(on: DispatchQueue.main)

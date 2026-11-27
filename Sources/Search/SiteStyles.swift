@@ -56,9 +56,10 @@ final class SiteStyles: ObservableObject {
 
     /// Nothing but whitespace is no style at all, and the site is forgotten.
     func set(_ css: String, on host: String) {
-        let kept = css.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : css
-        guard byHost[host] != kept else { return }
-        byHost[host] = kept
+        let isBlank = css.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let savedCSS: String? = isBlank ? nil : css
+        guard byHost[host] != savedCSS else { return }
+        byHost[host] = savedCSS
         save()
         changed.send(host)
     }
